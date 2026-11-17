@@ -25,7 +25,7 @@ app.use('/api/traffic', trafficRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/automata', automataRoutes);
 
-// System Health and DB connection status
+// Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'UP',
@@ -40,9 +40,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 Handler
-app.use((req, res) => {
+// Serve compiled React frontend in production
+const clientBuildPath = path.resolve(__dirname, '../../frontend/dist');
+const fs = require('fs');
+if (fs.existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+}
+
+// 404 Handler for API routes
+app.use('/api/*', (req, res) => {
   res.status(404).json({ success: false, message: 'API Route Not Found' });
+});
+
+// Client SPA fallback
+app.get('*', (req, res) => {
+  const indexFile = path.join(clientBuildPath, 'index.html');
+  if (fs.existsSync(indexFile)) {
+    res.sendFile(indexFile);
+  } else {
+    res.status(200).send('College NIDS Backend is running. Run "npm run build:frontend" to serve the dashboard.');
+  }
 });
 
 // Error handling middleware

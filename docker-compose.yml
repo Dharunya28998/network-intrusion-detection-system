@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  nids-app:
+    build: .
+    container_name: college-nids-app
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=mongodb://mongo:27017/college_nids
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+    restart: always
+
+  mongo:
+    image: mongo:latest
+    container_name: college-nids-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:
