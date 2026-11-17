@@ -1,0 +1,26 @@
+{
+  "name": "college-nids-project",
+  "version": "1.0.0",
+  "description": "Topic 23: Network Intrusion Detection System Using Regular Expressions and Finite Automata (MERN Stack)",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "backend": "npm --prefix backend start",
+    "frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build:frontend": "npm --prefix frontend run build"
+  },
+  "keywords": [
+    "finite-automata",
+    "dfa",
+    "regular-expressions",
+    "intrusion-detection-system",
+    "nids",
+    "mern-stack",
+    "react",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC"
+}

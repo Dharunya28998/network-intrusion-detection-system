@@ -1,0 +1,201 @@
+{
+  "scenario": "Topic 23: Network Intrusion Detection System Using Regular Expressions and Finite Automata",
+  "project": "Campus Defender NIDS",
+  "testCases": [
+    {
+      "testCaseId": "TC-01",
+      "testName": "Normal College Web Portal Access",
+      "category": "Clean Traffic",
+      "input": {
+        "sourceIP": "192.168.1.100",
+        "destinationIP": "10.0.0.1",
+        "port": 80,
+        "protocol": "HTTP",
+        "payload": "GET /student/dashboard/grades?semester=5 HTTP/1.1\r\nHost: portal.college.edu"
+      },
+      "expectedOutput": {
+        "status": "NORMAL",
+        "threatScore": 0,
+        "actionTaken": "FORWARDED",
+        "detectedAttacksCount": 0,
+        "automataBehavior": "All DFA state scanners remain in non-accepting states. No signature matches. Packet safely forwarded to campus destination."
+      }
+    },
+    {
+      "testCaseId": "TC-02",
+      "testName": "SQL Injection Authentication Bypass Attack",
+      "category": "Malicious Intrusion",
+      "input": {
+        "sourceIP": "10.20.1.14",
+        "destinationIP": "172.16.0.5",
+        "port": 80,
+        "protocol": "HTTP",
+        "payload": "POST /login HTTP/1.1\r\nusername=admin' OR 1=1--&password=xyz"
+      },
+      "expectedOutput": {
+        "status": "MALICIOUS",
+        "threatScore": 95,
+        "actionTaken": "BLOCKED",
+        "detectedAttacks": [
+          {
+            "ruleId": "dfa-sqli",
+            "ruleName": "DFA: SQL Injection (' OR 1=1)",
+            "attackType": "SQL Injection",
+            "severity": "CRITICAL",
+            "matchedPattern": "' OR 1=1",
+            "matchedBy": "DFA_AUTOMATON",
+            "automataTrace": [
+              { "from": "q0", "input": "'", "to": "q1" },
+              { "from": "q1", "input": " ", "to": "q2" },
+              { "from": "q2", "input": "O", "to": "q3" },
+              { "from": "q3", "input": "R", "to": "q4" },
+              { "from": "q4", "input": " ", "to": "q5" },
+              { "from": "q5", "input": "1", "to": "q6" },
+              { "from": "q6", "input": "=", "to": "q7" },
+              { "from": "q7", "input": "1", "to": "q8 (ACCEPT)" }
+            ]
+          }
+        ],
+        "recommendedAction": "Immediately terminate TCP session and block source IP in campus firewall."
+      }
+    },
+    {
+      "testCaseId": "TC-03",
+      "testName": "Cross-Site Scripting (XSS) Tag Injection",
+      "category": "Malicious Intrusion",
+      "input": {
+        "sourceIP": "172.28.4.11",
+        "destinationIP": "172.16.0.5",
+        "port": 443,
+        "protocol": "HTTPS",
+        "payload": "POST /feedback HTTP/1.1\r\ncomment=<script>alert('College XSS Exploit')</script>"
+      },
+      "expectedOutput": {
+        "status": "MALICIOUS",
+        "threatScore": 75,
+        "actionTaken": "BLOCKED",
+        "detectedAttacks": [
+          {
+            "ruleId": "dfa-xss",
+            "ruleName": "DFA: XSS Injection (<script)",
+            "attackType": "Cross-Site Scripting (XSS)",
+            "severity": "HIGH",
+            "matchedPattern": "<script",
+            "matchedBy": "DFA_AUTOMATON",
+            "automataTrace": [
+              { "from": "s0", "input": "<", "to": "s1" },
+              { "from": "s1", "input": "s", "to": "s2" },
+              { "from": "s2", "input": "c", "to": "s3" },
+              { "from": "s3", "input": "r", "to": "s4" },
+              { "from": "s4", "input": "i", "to": "s5" },
+              { "from": "s5", "input": "p", "to": "s6" },
+              { "from": "s6", "input": "t", "to": "s7 (ACCEPT)" }
+            ]
+          }
+        ],
+        "recommendedAction": "Log security event, inspect access logs, and rate limit subnet."
+      }
+    },
+    {
+      "testCaseId": "TC-04",
+      "testName": "Directory / Path Traversal Arbitrary File Read",
+      "category": "Malicious Intrusion",
+      "input": {
+        "sourceIP": "198.51.100.3",
+        "destinationIP": "172.16.0.10",
+        "port": 80,
+        "protocol": "HTTP",
+        "payload": "GET /view?doc=../../etc/passwd HTTP/1.1\r\nHost: college.edu"
+      },
+      "expectedOutput": {
+        "status": "MALICIOUS",
+        "threatScore": 75,
+        "actionTaken": "BLOCKED",
+        "detectedAttacks": [
+          {
+            "ruleId": "dfa-traversal",
+            "ruleName": "DFA: Directory Traversal (../..)",
+            "attackType": "Path Traversal",
+            "severity": "HIGH",
+            "matchedPattern": "../../",
+            "matchedBy": "DFA_AUTOMATON",
+            "automataTrace": [
+              { "from": "p0", "input": ".", "to": "p1" },
+              { "from": "p1", "input": ".", "to": "p2" },
+              { "from": "p2", "input": "/", "to": "p3" },
+              { "from": "p3", "input": ".", "to": "p4" },
+              { "from": "p4", "input": ".", "to": "p5 (ACCEPT)" }
+            ]
+          }
+        ],
+        "recommendedAction": "Log security event, inspect access logs, and rate limit subnet."
+      }
+    },
+    {
+      "testCaseId": "TC-05",
+      "testName": "OS Shell Command Injection Chaining",
+      "category": "Malicious Intrusion",
+      "input": {
+        "sourceIP": "203.0.113.88",
+        "destinationIP": "172.16.0.12",
+        "port": 8080,
+        "protocol": "HTTP",
+        "payload": "POST /ping HTTP/1.1\r\nhost=127.0.0.1; whoami; cat /etc/shadow"
+      },
+      "expectedOutput": {
+        "status": "MALICIOUS",
+        "threatScore": 80,
+        "actionTaken": "BLOCKED",
+        "detectedAttacks": [
+          {
+            "ruleId": "REG-CMD-01",
+            "ruleName": "Command Injection - Shell Metacharacters",
+            "attackType": "Command Injection",
+            "severity": "CRITICAL",
+            "matchedPattern": "; whoami",
+            "matchedBy": "REGEX_SIGNATURE"
+          }
+        ],
+        "recommendedAction": "Immediately terminate TCP session and block source IP in campus firewall."
+      }
+    },
+    {
+      "testCaseId": "TC-06",
+      "testName": "Form Validation - Malformed IP Address",
+      "category": "Input Validation",
+      "input": {
+        "sourceIP": "999.300.1.1",
+        "destinationIP": "172.16.0.5",
+        "port": 80,
+        "protocol": "HTTP",
+        "payload": "GET / HTTP/1.1"
+      },
+      "expectedOutput": {
+        "clientValidation": "FAIL",
+        "serverValidation": "HTTP 400 Bad Request",
+        "errorField": "sourceIP",
+        "errorMessage": "Invalid IPv4 format. Must be X.X.X.X (0-255 each)",
+        "automataBehavior": "IPv4 validator DFA transitions into TRAP / Dead state upon reading invalid octet."
+      }
+    },
+    {
+      "testCaseId": "TC-07",
+      "testName": "Form Validation - Out of Range Port",
+      "category": "Input Validation",
+      "input": {
+        "sourceIP": "192.168.1.1",
+        "destinationIP": "172.16.0.5",
+        "port": 70000,
+        "protocol": "HTTP",
+        "payload": "GET / HTTP/1.1"
+      },
+      "expectedOutput": {
+        "clientValidation": "FAIL",
+        "serverValidation": "HTTP 400 Bad Request",
+        "errorField": "port",
+        "errorMessage": "Port must be an integer between 1 and 65535",
+        "automataBehavior": "Rejected: Port violates 16-bit integer boundary [1, 65535]."
+      }
+    }
+  ]
+}
