@@ -1,7 +1,7 @@
 # Campus Defender NIDS: Network Intrusion Detection System
 ### Using Regular Expressions and Finite Automata (MERN Stack)
 
-> 🌐 **Official Live URL (Cloudflare High-Speed Edge)**: [https://root-new-throughout-correspondence.trycloudflare.com](https://root-new-throughout-correspondence.trycloudflare.com)
+> 🌐 **Active Live URL**: [https://online-told-avoid-region.trycloudflare.com](https://online-told-avoid-region.trycloudflare.com)
 > 💻 **Local Production Link**: [http://localhost:5001](http://localhost:5001)
 > 📂 **Official GitHub Repository**: [https://github.com/Dharunya28998/network-intrusion-detection-system](https://github.com/Dharunya28998/network-intrusion-detection-system)
 
